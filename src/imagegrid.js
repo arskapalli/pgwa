@@ -7,14 +7,13 @@ export default class ImageGrid extends React.Component{
         super(props);
     }
 
-
     render(){
-        const image_element_list = this.props.image_list.map( (image) => {
-            return <Image props={image}/>
+        const image_element_list = this.props.imageList.map( (id) => {
+            return <Image id={id} clickHandler={this.props.imageClickHandler}/>
         });
 
         return (
-            <div>
+            <div className="d-flex flex-wrap">
                 {image_element_list}
             </div>
         );
