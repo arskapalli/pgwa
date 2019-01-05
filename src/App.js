@@ -10,6 +10,9 @@ export default class App extends React.Component{
     constructor(props){
         super(props);
 
+        this.imageList = this.loadImages();
+
+
         this.state = {
             selectedImageID: null,
             displayFloatingImage: false
@@ -17,6 +20,7 @@ export default class App extends React.Component{
 
         this.selectImageHandler = this.selectImageHandler.bind(this);
         this.toggleFloatingImage = this.toggleFloatingImage.bind(this);
+        this.loadImages = this.loadImages.bind(this);
     }
 
     selectImageHandler(id){
@@ -28,15 +32,45 @@ export default class App extends React.Component{
         this.setState({displayFloatingImage: !this.state.displayFloatingImage})
     };
 
-    render(){
-        const image_list = Array.apply(null, {length: 100}).map(Number.call, Number);
+    loadImages(page){
+        const images = [
+        "images/airplane.png",
+        "images/arctichare.png",
+        "images/baboon.png",
+        "images/barbara.png",
+        "images/boat.png",
+        "images/cat.png",
+        "images/fruits.png",
+        "images/frymire.png",
+        "images/girl.png",
+        "images/goldhill.png",
+        "images/lena.png",
+        "images/monarch.png",
+        "images/mountain.png",
+        "images/peppers.png",
+        "images/pool.png",
+        "images/sails.png",
+        "images/serrano.png",
+        "images/tulips.png",
+        "images/watch.png",
+        "images/zelda.png"
+        ];
 
+        //~ this.imageList = Array.apply(null, {length: page * 100}).map(Number.call, Number);
+        // TEMP TODO
+
+        this.forceUpdate();
+
+        return images;
+    }
+
+    render(){
         return (
-            <>
+            <div className="App">
                 <NavBar />
-                <ImageGrid imageList={image_list} imageClickHandler={this.selectImageHandler}/>
+                <ImageGrid app={this} imageList={this.imageList} imageClickHandler={this.selectImageHandler}/>
                 <FloatingImage img={this.state.selectedImageID} isToggled={this.state.displayFloatingImage} toggleFloatingImage={this.toggleFloatingImage} />
-            </>
+            </div>
         )
     };
 }
