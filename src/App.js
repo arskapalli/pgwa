@@ -2,6 +2,7 @@ import React from "react";
 
 import NavBar from "./navbar";
 import ImageGrid from "./imagegrid";
+import FloatingImage from "./floatingimage";
 
 export default class App extends React.Component{
     constructor(props){
@@ -16,6 +17,7 @@ export default class App extends React.Component{
                 <NavBar />
                 <ImageGrid image_list={image_list}/>
                 <a href="/demo">Link test</a>
+                <FloatingImage />
             </>
         )
     };
