@@ -14,22 +14,15 @@ export default class App extends React.Component{
 
 
         this.state = {
-            selectedImageID: null,
-            displayFloatingImage: false
+            selectedImageID: null
         };
 
         this.selectImageHandler = this.selectImageHandler.bind(this);
-        this.toggleFloatingImage = this.toggleFloatingImage.bind(this);
         this.loadImages = this.loadImages.bind(this);
     }
 
     selectImageHandler(id){
         this.setState({selectedImageID: id})
-        this.setState({displayFloatingImage: true})
-    };
-
-    toggleFloatingImage() {
-        this.setState({displayFloatingImage: !this.state.displayFloatingImage})
     };
 
     loadImages(page){
@@ -68,8 +61,8 @@ export default class App extends React.Component{
         return (
             <div className="App">
                 <NavBar />
-                <ImageGrid app={this} imageList={this.imageList} imageClickHandler={this.selectImageHandler}/>
-                <FloatingImage img={this.state.selectedImageID} isToggled={this.state.displayFloatingImage} toggleFloatingImage={this.toggleFloatingImage} />
+                <ImageGrid imageList={this.imageList} imageClickHandler={this.selectImageHandler}/>
+                <FloatingImage app={this} img={this.state.selectedImageID} />
             </div>
         )
     };

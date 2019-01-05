@@ -6,17 +6,16 @@ export default class FloatingImage extends React.Component {
     }
 
     render() {
-
-        const img = this.props.img
+        const img = this.props.img;
 
         const visibilityToggle = {
-            visibility: this.props.isToggled ? 'visible' : 'hidden'
-        }
+            display: img ? 'initial' : 'none'
+        };
 
         return (
-            <div id="FloatingImageBackground" style={visibilityToggle} onClick={this.props.toggleFloatingImage}>
+            <div id="FloatingImageBackground" style={visibilityToggle} onClick={ ()=>{this.props.app.selectImageHandler(null)} }>
                 <div id="FloatingImageContainer">
-                    {/*<img id="FloatingImage" src={require('./images/cat.png')} />*/}
+                    <img id="FloatingImage" src={img} />
                     <p className="FloatingImageLabel">Selected image: {img}</p>
                     <p className="FloatingImageDescription">asfdasfdasdfasdfasfdafsd</p>
                 </div>
