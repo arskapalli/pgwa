@@ -5,21 +5,31 @@ import ImageGrid from "./imagegrid";
 import FloatingImage from "./floatingimage";
 
 import "./app.css";
+import { isNumber } from "util";
 
 export default class App extends React.Component{
     constructor(props){
         super(props);
 
+
         this.state = {
-            path: "",
-            label: "",
-            desc: "",
-            displayFloatingImage: false
+            path: null,
+            label: null,
+            desc: null,
+            displayFloatingImage: false,
+            imageList: null
         };
 
         this.selectImageHandler = this.selectImageHandler.bind(this);
         this.toggleFloatingImage = this.toggleFloatingImage.bind(this);
     }
+
+    componentDidMount() {
+        this.getBackendThumbnails().then(thumbs => {
+            this.setState({imageList: thumbs});
+        });
+
+    };
 
     getBackendImage = async(id) => {
         const response = await fetch('/img?id='+id);
@@ -31,10 +41,23 @@ export default class App extends React.Component{
         return body;
     }
 
+    getBackendThumbnails = async() => {
+        const response = await fetch('/list');
+        const body = await response.json();
+
+        if (response.status !==  200) {
+            throw Error(body.message)
+        }
+        return body;
+    }
+
     selectImageHandler(id){
-        this.getBackendImage(id)
-            .then(res => this.setState({ path: res.path, label: res.label, desc: res.desc, displayFloatingImage: true }))
-            .catch(err => console.log(err));
+        console.log(id);
+        if (id && isNumber(id)) {
+            this.getBackendImage(id)
+                .then(res => this.setState({ path: res.path, label: res.label, desc: res.desc, displayFloatingImage: true }))
+                .catch(err => console.log(err));
+        }
     };
 
     toggleFloatingImage() {
@@ -42,19 +65,23 @@ export default class App extends React.Component{
     };
 
     render(){
-        const image_list = Array.apply(null, {length: 100}).map(Number.call, Number);
+
+        if (this.state.imageList === null) {
+            return "Loading";
+        }
+
         let img = {
             path: this.state.path,
-            label:this.state.label,
-            desc:this.state.desc
+            label: this.state.label,
+            desc: this.state.desc
         };
 
         return (
-            <>
+            <div className="App">
                 <NavBar />
-                <ImageGrid imageList={image_list} imageClickHandler={this.selectImageHandler}/>
+                <ImageGrid imageList={this.state.imageList} imageClickHandler={this.selectImageHandler}/>
                 <FloatingImage img={img} isToggled={this.state.displayFloatingImage} toggleFloatingImage={this.toggleFloatingImage} />
-            </>
+            </div>
         )
     };
 }

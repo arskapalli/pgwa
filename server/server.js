@@ -24,3 +24,15 @@ app.get('/img', (req, res) => {
         }
     });
 });
+
+app.get('/list', (req, res) => {
+    const sql = "SELECT ID, PATH FROM IMAGE";
+    db.all(sql,[], (err, rows) => {
+        if(err) {
+            return console.error(err.message);
+        }
+        else {
+            res.send({ rows })
+        }
+    });
+});

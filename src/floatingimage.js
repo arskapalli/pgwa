@@ -13,7 +13,7 @@ export default class FloatingImage extends React.Component {
 
         const visibilityToggle = {
             visibility: this.props.isToggled ? 'visible' : 'hidden'
-        }
+        };
 
         return (
             <div id="FloatingImageBackground" style={visibilityToggle} onClick={this.props.toggleFloatingImage}>
