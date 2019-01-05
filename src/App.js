@@ -11,7 +11,9 @@ export default class App extends React.Component{
         super(props);
 
         this.state = {
-            selectedImageID: null,
+            path: "",
+            label: "",
+            desc: "",
             displayFloatingImage: false
         };
 
@@ -19,9 +21,20 @@ export default class App extends React.Component{
         this.toggleFloatingImage = this.toggleFloatingImage.bind(this);
     }
 
+    getBackendImage = async(id) => {
+        const response = await fetch('/img?id='+id);
+        const body = await response.json();
+
+        if (response.status !==  200) {
+            throw Error(body.message)
+        }
+        return body;
+    }
+
     selectImageHandler(id){
-        this.setState({selectedImageID: id})
-        this.setState({displayFloatingImage: true})
+        this.getBackendImage(id)
+            .then(res => this.setState({ path: res.path, label: res.label, desc: res.desc, displayFloatingImage: true }))
+            .catch(err => console.log(err));
     };
 
     toggleFloatingImage() {
@@ -30,12 +43,17 @@ export default class App extends React.Component{
 
     render(){
         const image_list = Array.apply(null, {length: 100}).map(Number.call, Number);
+        let img = {
+            path: this.state.path,
+            label:this.state.label,
+            desc:this.state.desc
+        };
 
         return (
             <>
                 <NavBar />
                 <ImageGrid imageList={image_list} imageClickHandler={this.selectImageHandler}/>
-                <FloatingImage img={this.state.selectedImageID} isToggled={this.state.displayFloatingImage} toggleFloatingImage={this.toggleFloatingImage} />
+                <FloatingImage img={img} isToggled={this.state.displayFloatingImage} toggleFloatingImage={this.toggleFloatingImage} />
             </>
         )
     };
