@@ -1,0 +1,8 @@
+
+.Image{
+    margin: 5px;
+    min-width: 256px;
+    width: 10%;
+    height: 100px;
+    border: 1px solid;
+}
