@@ -3,6 +3,8 @@ const app = express();
 const sqlite3 = require('sqlite3').verbose();
 const port = process.env.port || 5000;
 
+const fileUpload = require('express-fileupload');
+
 app.listen(port, () => console.log('Listening on port 5000'))
 
 let db = new sqlite3.Database('./pgwa.db', (err) => {
@@ -33,6 +35,30 @@ app.get('/list', (req, res) => {
         }
         else {
             res.send({ rows })
+        }
+    });
+});
+
+app.use(fileUpload());
+
+app.post("/upload", (req, res) =>{
+    const sql = "INSERT INTO IMAGE(FILENAME, LABEL, DESCRIPTION, PATH) VALUES($FILENAME, $LABEL, $DESCRIPTION, $PATH);";
+    const image = req.files.image;
+
+    const data = {
+        $FILENAME: image.name,
+        $LABEL: image.name,
+        $DESCRIPTION: req.body.description,
+        $PATH: "/images/" + image.name,
+    };
+    db.run(sql, data, (error)=>{
+        if(error)
+            console.error("Upload error: ", error.message);
+        else
+        {
+            console.log("Upload success sike");
+            image.mv("../public/images/" + image.name);
+            res.send({success:true});
         }
     });
 });
