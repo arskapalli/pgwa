@@ -18,8 +18,13 @@ export default class Image extends React.Component{
 
         return (
             <div className={display}>
-                <textarea ref={this._descriptionRef}></textarea>
-                <button onClick={()=>{handleUpload(this.props.promiseThingy, this._descriptionRef)} }>Upload</button>
+                <div className={"UploadShade"}></div>
+                <div className={"UploadMain"}>
+                    <div className={"UploadControls"}>
+                        <textarea ref={this._descriptionRef}></textarea>
+                        <button onClick={()=>{handleUpload(this.props.promiseThingy, this._descriptionRef)} }>Upload</button>
+                    </div>
+                </div>
             </div>
         );
     };
