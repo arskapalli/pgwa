@@ -11,12 +11,8 @@ export default class FloatingImage extends React.Component {
             return "Ladataan";
         }
 
-        const visibilityToggle = {
-            visibility: this.props.isToggled ? 'visible' : 'hidden'
-        };
-
         return (
-            <div id="FloatingImageBackground" style={visibilityToggle} onClick={this.props.toggleFloatingImage}>
+            <div id="FloatingImageBackground" onClick={this.props.toggleFloatingImage}>
                 <div id="FloatingImageContainer">
                     <img id="FloatingImage" src={this.props.img.path} />
                     <p className="FloatingImageLabel">{this.props.img.label}</p>
