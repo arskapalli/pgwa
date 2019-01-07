@@ -6,7 +6,6 @@ import FloatingImage from "./floatingimage";
 import Upload from "./upload";
 
 import "./app.css";
-import { isNumber } from "util";
 
 export default class App extends React.Component{
     constructor(props){
@@ -14,9 +13,7 @@ export default class App extends React.Component{
 
 
         this.state = {
-            path: null,
-            label: null,
-            desc: null,
+            selectedImageID: null,
             displayFloatingImage: false,
             imageList: null,
 
@@ -36,16 +33,6 @@ export default class App extends React.Component{
 
     };
 
-    getBackendImage = async(id) => {
-        const response = await fetch('/img?id='+id);
-        const body = await response.json();
-
-        if (response.status !==  200) {
-            throw Error(body.message)
-        }
-        return body;
-    }
-
     getBackendThumbnails = async() => {
         const response = await fetch('/list');
         const body = await response.json();
@@ -57,12 +44,7 @@ export default class App extends React.Component{
     }
 
     selectImageHandler(id){
-        console.log(id);
-        if (id && isNumber(id)) {
-            this.getBackendImage(id)
-                .then(res => this.setState({ path: res.path, label: res.label, desc: res.desc, displayFloatingImage: true }))
-                .catch(err => console.log(err));
-        }
+        this.setState({selectedImageID: id, displayFloatingImage: true})
     };
 
     toggleFloatingImage() {
@@ -122,19 +104,13 @@ export default class App extends React.Component{
             return "Loading";
         }
 
-        let img = {
-            path: this.state.path,
-            label: this.state.label,
-            desc: this.state.desc
-        };
-
         return (
             <div className="App" onDragOver={this.fileDragOverHandler} onDrop={this.fileDropHandler}>
                 <NavBar />
                 <ImageGrid imageList={this.state.imageList} imageClickHandler={this.selectImageHandler}/>
                 {
                     this.state.displayFloatingImage 
-                    ? <FloatingImage img={img} toggleFloatingImage={this.toggleFloatingImage} />
+                    ? <FloatingImage id={this.state.selectedImageID} toggleFloatingImage={this.toggleFloatingImage} />
                     : <></>
                 }
                 <Upload promiseThingy={this.state.fileUploadPromise} />
