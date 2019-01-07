@@ -108,11 +108,7 @@ export default class App extends React.Component{
             <div className="App" onDragOver={this.fileDragOverHandler} onDrop={this.fileDropHandler}>
                 <NavBar />
                 <ImageGrid imageList={this.state.imageList} imageClickHandler={this.selectImageHandler}/>
-                {
-                    this.state.displayFloatingImage 
-                    ? <FloatingImage id={this.state.selectedImageID} toggleFloatingImage={this.toggleFloatingImage} />
-                    : <></>
-                }
+                {this.state.displayFloatingImage && <FloatingImage id={this.state.selectedImageID} toggleFloatingImage={this.toggleFloatingImage} />}
                 <Upload promiseThingy={this.state.fileUploadPromise} />
             </div>
         )
