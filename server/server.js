@@ -44,21 +44,31 @@ app.use(fileUpload());
 app.post("/upload", (req, res) =>{
     const sql = "INSERT INTO IMAGE(FILENAME, LABEL, DESCRIPTION, PATH) VALUES($FILENAME, $LABEL, $DESCRIPTION, $PATH);";
     const image = req.files.image;
-
-    const data = {
-        $FILENAME: image.name,
-        $LABEL: image.name,
-        $DESCRIPTION: req.body.description,
-        $PATH: "/images/" + image.name,
-    };
-    db.run(sql, data, (error)=>{
-        if(error)
-            console.error("Upload error: ", error.message);
-        else
-        {
-            console.log("Upload success sike");
-            image.mv("../public/images/" + image.name);
-            res.send({success:true});
+    const filetype = image.name.split('.').pop();
+    
+    db.get("SELECT MAX(ID) AS 'RESULT' FROM IMAGE", [], (error, row) => {
+        if (error)
+            console.error("Error: ", error.message);
+        else {
+            const id = row.RESULT ? row.RESULT + 1 : 1;
+            const data = {
+                $FILENAME: image.name,
+                $LABEL: image.name,
+                $DESCRIPTION: req.body.description,
+                $PATH: "/images/" + id + "." + filetype
+            };
+            console.log(data);
+            db.run(sql, data, (error)=>{
+                if(error)
+                    console.error("Upload error: ", error.message);
+                else
+                {
+                    console.log("Upload success sike");
+                    image.mv("../public/images/" + id + "." + filetype);
+                    res.send({success:true});
+                }
+            });
         }
     });
+
 });
