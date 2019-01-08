@@ -24,7 +24,7 @@ export default class FloatingImage extends React.Component {
 
     render() {
 
-        if (this.props.id && isNumber(this.props.id)) {
+        if (this.props.id && isNumber(this.props.id) && this.state.path === null) {
             this.getBackendImage(this.props.id)
                 .then(res => this.setState({ path: res.path, label: res.label, desc: res.desc, displayFloatingImage: true }))
                 .catch(err => console.log(err));
