@@ -6,29 +6,35 @@ export default class ImageGrid extends React.Component{
     constructor(props){
         super(props);
 
-        this.scrollHandler = this.scrollHandler.bind(this);
+        this.state = {
+            imageList : null,
+        };
+
+        //~ this.scrollHandler = this.scrollHandler.bind(this); // TODO
     }
 
-    scrollHandler(e){
-        const grid = e.target;
-        const imageSize = grid.firstElementChild.clientWidth;
+    async componentDidMount(){
+        const response = await fetch('/list');
+        const body = await response.json();
 
-        const imageRowCount = Math.round(grid.clientWidth / imageSize);
+        if (response.status !==  200) {
+            throw Error(body.message)
+        }
 
-        console.log(imageRowCount);
+        this.setState({imageList : body});
     }
 
     render(){
-
-        if (this.props.imageList === null) {
-            return "Loading"
+        if (!this.state.imageList) {
+            return "Loading"; // TODO
         }
-        
-        const image_element_list = this.props.imageList.rows.map( (image) => {
-            return <Image id={image.ID} path={image.PATH} clickHandler={this.props.imageClickHandler}/>
+
+        const image_element_list = this.state.imageList.rows.map( (image) => {
+            return <Image key={image.ID} id={image.ID} path={image.PATH}/>
         });
-        
+
         return (
+
             <div className="ImageGrid" onScroll={this.scrollHandler}>
                 {image_element_list}
             </div>

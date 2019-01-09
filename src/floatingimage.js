@@ -1,39 +1,43 @@
 import React from 'react';
-import { isNumber } from "util";
 
 export default class FloatingImage extends React.Component {
     constructor(props) {
         super(props);
         this.state = {
+            id: null,
             path: null,
             label: null,
-            desc: null
+            desc: null,
         };
-        this.getBackendImage = this.getBackendImage.bind(this);
     };
 
-    getBackendImage = async(id) => {
-        const response = await fetch('/img?id='+id);
-        const body = await response.json();
+    async componentDidMount(){
+        const imageId = this.props.match.params.id;
 
-        if (response.status !==  200) {
-            throw Error(body.message)
+        try{
+            const response = await fetch("/img?id=" + imageId);
+
+            if(response.status !== 200)
+                throw Error(response.message);
+
+            const body = await response.json();
+
+            this.setState(body);
+
         }
-        return body;
+        catch{
+            // TODO
+        }
     }
 
     render() {
-
-        if (this.props.id && isNumber(this.props.id) && this.state.path === null) {
-            this.getBackendImage(this.props.id)
-                .then(res => this.setState({ path: res.path, label: res.label, desc: res.desc, displayFloatingImage: true }))
-                .catch(err => console.log(err));
-        }
+        if(!this.state.id)
+            return "Loading..."; // TODO
 
         return (
-            <div id="FloatingImageBackground" onClick={this.props.toggleFloatingImage}>
+            <div id="FloatingImageBackground">
                 <div id="FloatingImageContainer">
-                    <img id="FloatingImage" src={this.state.path} />
+                    <img alt={this.state.label} id="FloatingImage" src={this.state.path} />
                     <p className="FloatingImageLabel">{this.state.label}</p>
                     <p className="FloatingImageDescription">{this.state.desc}</p>
                 </div>

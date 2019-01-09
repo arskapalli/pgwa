@@ -1,8 +1,17 @@
+body{
+    background: #0B0B0B;
+}
+
 .App{
     height: 100vh;
 
     display: flex;
     flex-direction: column;
+}
+
+.Navbar{
+    color: white;
+    display: flex;
 }
 
 
@@ -11,6 +20,10 @@
     grid-template-columns: repeat(auto-fill, minmax(256px, 1fr));
 
     overflow-y: scroll;
+
+    grid-column-gap: 5px;
+    grid-row-gap: 5px;
+    padding: 5px;
 }
 
 .Image{
@@ -28,6 +41,8 @@
     object-fit: cover;
     width: 100%;
     height: 100%;
+
+    border-radius: 5px;
 }
 
 .UploadMain{
