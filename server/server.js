@@ -10,7 +10,7 @@ function initializeDatabase() {
     const sql = [
         "CREATE TABLE IF NOT EXISTS USER ( ID INTEGER PRIMARY KEY AUTOINCREMENT, USERNAME VARCHAR(20) NOT NULL );",
         "CREATE TABLE IF NOT EXISTS IMAGE ( ID INTEGER PRIMARY KEY AUTOINCREMENT, FILENAME TEXT NOT NULL, LABEL TEXT NOT NULL, DESCRIPTION TEXT, IMAGE BLOB, ANNOTATION TEXT, USERID INT, PATH TEXT, FOREIGN KEY(USERID) REFERENCES USER(ID) );",
-        "CREATE TABLE IF NOT EXISTS COMMENT ( ID INTEGER PRIMARY KEY AUTOINCREMENT, BODY TEXT NOT NULL, USERID INTEGER, IMAGEID INTEGER, FOREIGN KEY(USERID) REFERENCES USER(ID), FOREIGN KEY(IMAGEID) REFERENCES IMAGE(ID) );",
+        "CREATE TABLE IF NOT EXISTS COMMENT ( ID INTEGER PRIMARY KEY AUTOINCREMENT, BODY TEXT NOT NULL, TIMESTAMP DATETIME DEFAULT CURRENT_TIMESTAMP, USERID INTEGER, IMAGEID INTEGER, FOREIGN KEY(USERID) REFERENCES USER(ID), FOREIGN KEY(IMAGEID) REFERENCES IMAGE(ID) );",
         "CREATE TABLE IF NOT EXISTS ANNOTATION ( ID INTEGER PRIMARY KEY AUTOINCREMENT, BODY TEXT NOT NULL, USERID INTEGER, IMAGEID INTEGER, FOREIGN KEY(USERID) REFERENCES USER(ID), FOREIGN KEY(IMAGEID) REFERENCES IMAGE(ID) );"
     ];
 
@@ -22,6 +22,11 @@ function initializeDatabase() {
         for (let i = 0, len = sql.length; i < len; i++) {
             db.run(sql[i], (error) => {
                 if (error) console.error("Error initializing database: ", error.message);
+                else {
+                    db.run("INSERT INTO USER(USERNAME) SELECT 'anonymous' WHERE NOT EXISTS(SELECT 1 FROM USER WHERE ID = 1);", (error) => {
+                        if (error) console.error("Error initializing database: ", error.message);
+                    });
+                }
             });
         };
     });
@@ -117,7 +122,7 @@ app.post("/comment", (req,res) => {
 
 app.get("/comment", (req,res) => {
     const data = {$IMAGEID: req.query.id};
-    const sql = "SELECT ID, BODY, USERID FROM COMMENT WHERE IMAGEID = $IMAGEID;";
+    const sql = "SELECT COMMENT.ID, COMMENT.BODY, COMMENT.TIMESTAMP, USER.USERNAME FROM COMMENT LEFT JOIN USER on USER.ID = COMMENT.USERID WHERE COMMENT.IMAGEID = $IMAGEID;";
     db.all(sql, data, (error, comments) => {
         if (error) {
             console.log("Error retrieving comments: ", error.message);

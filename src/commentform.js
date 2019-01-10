@@ -11,6 +11,7 @@ export default class CommentForm extends React.Component {
         e.preventDefault();
         const comment = new FormData(e.target);
         comment.append("image", this.props.id);
+        comment.append("user", 1);
 
         fetch("/comment",{
             method: "POST",

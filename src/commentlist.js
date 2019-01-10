@@ -36,7 +36,12 @@ export default class CommentList extends React.Component {
             <ul className="list-group">
                 {this.state.commentList.map(comment => (
                     <li key={comment.ID} className="list-group-item">
-                        {comment.BODY}
+                        <h6>
+                            {comment.BODY}
+                        </h6> 
+                        <p className="text-muted">
+                            {comment.USERNAME} - {comment.TIMESTAMP}
+                        </p>
                     </li>
                 ))}
             </ul>
