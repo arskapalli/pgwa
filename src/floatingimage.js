@@ -1,4 +1,6 @@
 import React from 'react';
+import CommentList from './commentlist';
+import CommentForm from './commentform';
 
 export default class FloatingImage extends React.Component {
     constructor(props) {
@@ -39,6 +41,8 @@ export default class FloatingImage extends React.Component {
                 <img alt={this.state.label} className="FloatingImage" src={this.state.path} />
                 <p className="FloatingImageLabel">{this.state.label}</p>
                 <p className="FloatingImageDescription">{this.state.desc}</p>
+                <CommentList id={this.props.match.params.id} />
+                <CommentForm id={this.props.match.params.id} />
             </div>
         );
     }
