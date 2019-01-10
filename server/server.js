@@ -5,14 +5,25 @@ const port = process.env.port || 5000;
 
 const fileUpload = require('express-fileupload');
 
-app.listen(port, () => console.log('Listening on port 5000'))
+function initializeDatabase() {
 
-let db = new sqlite3.Database('./pgwa.db', (err) => {
-    if (err) {
-        console.error(err.message)
-    };
-    console.log('Connected to PGWA DB');
-});
+    let db = new sqlite3.Database('./pgwa.db', (err) => {
+        if (err) {
+            console.error(err.message)
+        };
+        console.log('Connected to PGWA DB');
+        db.run("CREATE TABLE IF NOT EXISTS USER ( ID INTEGER PRIMARY KEY AUTOINCREMENT, USERNAME VARCHAR(20) NOT NULL );", (error) => {if(error) console.error("Error initializing database: ", error.message);});
+        db.run("CREATE TABLE IF NOT EXISTS IMAGE ( ID INTEGER PRIMARY KEY AUTOINCREMENT, FILENAME TEXT NOT NULL, LABEL TEXT NOT NULL, DESCRIPTION TEXT, IMAGE BLOB, ANNOTATION TEXT, USERID INT, PATH TEXT, FOREIGN KEY(USERID) REFERENCES USER(ID) );", (error) => {if(error) console.error("Error initializing database: ", error.message);});
+        db.run("CREATE TABLE IF NOT EXISTS COMMENT ( ID INTEGER PRIMARY KEY AUTOINCREMENT, BODY TEXT NOT NULL, USERID INTEGER, IMAGEID INTEGER, FOREIGN KEY(USERID) REFERENCES USER(ID), FOREIGN KEY(IMAGEID) REFERENCES IMAGE(ID) );", (error) => {if(error) console.error("Error initializing database: ", error.message);});
+        db.run("CREATE TABLE IF NOT EXISTS ANNOTATION ( ID INTEGER PRIMARY KEY AUTOINCREMENT, BODY TEXT NOT NULL, USERID INTEGER, IMAGEID INTEGER, FOREIGN KEY(USERID) REFERENCES USER(ID), FOREIGN KEY(IMAGEID) REFERENCES IMAGE(ID) );", (error) => {if(error) console.error("Error initializing database: ", error.message);});
+    });
+
+    return db;
+};
+
+db = initializeDatabase();
+
+app.listen(port, () => console.log('Listening on port 5000'))
 
 app.get('/img', (req, res) => {
     let id = req.query.id;
