@@ -1,15 +1,16 @@
-import React from "react";
+import React from "react"
 
-import { BrowserRouter, Route, Switch } from 'react-router-dom';
+import { BrowserRouter, Route, Switch } from 'react-router-dom'
 
-import NavBar from "./navbar";
-import ImageGrid from "./imagegrid";
-import FloatingImage from "./floatingimage";
-import Upload from "./upload";
-import LoginForm from "./loginform";
-import NoMatch from "./nomatch";
+import NavBar           from "./navbar"
+import ImageGrid        from "./imagegrid"
+import FloatingImage    from "./floatingimage"
+import Upload           from "./upload"
+import LoginForm        from "./loginform"
+import NoMatch          from "./nomatch"
+import Footer           from "./footer"
 
-import "./app.css";
+import "./app.css"
 
 export default class App extends React.Component{
     constructor(props){
@@ -19,19 +20,24 @@ export default class App extends React.Component{
     render(){
         return (
             <BrowserRouter>
-                <div>
+                <>
                     <NavBar />
-                    <Switch>
-                        <Route exact path="/" component={ImageGrid}/>
 
-                        <Route path="/image/:id" component={FloatingImage}/>
-                        <Route exact path="/upload" component={Upload}/>
+                    <div className="Content">
+                        <Switch>
+                            <Route exact path="/" component={ImageGrid}/>
 
-                        <Route exact path="/login" component={LoginForm}/>
+                            <Route path="/image/:id" component={FloatingImage}/>
+                            <Route exact path="/upload" component={Upload}/>
 
-                        <Route component={NoMatch}/> {/* 404 Handler */}
-                    </Switch>
-                </div>
+                            <Route exact path="/login" component={LoginForm}/>
+
+                            <Route component={NoMatch}/> {/* 404 Handler */}
+                        </Switch>
+                    </div>
+
+                    <Footer />
+                </>
             </BrowserRouter>
         );
     };

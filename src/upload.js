@@ -34,7 +34,7 @@ export default class Upload extends React.Component{
     {
         return (
             <>
-                <div className={"UploadShade"}></div>
+                {/* <div className={"UploadShade"}></div> */}
                 <div className={"UploadMain"}>
                     <div className={"UploadControls"}>
                         <input type="file" ref={this._fileRef}/>

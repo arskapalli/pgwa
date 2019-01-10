@@ -35,12 +35,10 @@ export default class FloatingImage extends React.Component {
             return "Loading..."; // TODO
 
         return (
-            <div id="FloatingImageBackground">
-                <div id="FloatingImageContainer">
-                    <img alt={this.state.label} id="FloatingImage" src={this.state.path} />
-                    <p className="FloatingImageLabel">{this.state.label}</p>
-                    <p className="FloatingImageDescription">{this.state.desc}</p>
-                </div>
+            <div className="FloatingImageContainer">
+                <img alt={this.state.label} className="FloatingImage" src={this.state.path} />
+                <p className="FloatingImageLabel">{this.state.label}</p>
+                <p className="FloatingImageDescription">{this.state.desc}</p>
             </div>
         );
     }

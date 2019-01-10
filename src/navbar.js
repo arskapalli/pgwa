@@ -9,7 +9,7 @@ export default class NavBar extends React.Component{
 
     render(){
         return (
-            <div className="Navbar">
+            <div className="Header">
                 <Link to="/"><h1>PGWA</h1></Link>
                 <Link to="/upload"><span>Upload</span></Link>
                 <Link to="/login"><span>Login</span></Link>
