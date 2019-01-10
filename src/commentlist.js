@@ -33,9 +33,9 @@ export default class CommentList extends React.Component {
             return "Loading";
         }
         return (
-            <ul className="CommentList">
+            <ul className="list-group">
                 {this.state.commentList.map(comment => (
-                    <li key={comment.ID} className="Comment">
+                    <li key={comment.ID} className="list-group-item">
                         {comment.BODY}
                     </li>
                 ))}
