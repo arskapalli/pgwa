@@ -78,3 +78,60 @@ app.post("/login", (req, res)=>{
     console.log("User: '" + req.body.username + "'\nPassword: '" + req.body.password + "'\n");
     res.end();
 });
+
+
+app.post("/comment", (req,res) => {
+    const sql = "INSERT INTO COMMENT(IMAGEID,USERID,BODY) VALUES($IMAGEID,$USERID,$BODY);"
+    const data = {
+        $IMAGEID: req.body.image,
+        $USERID: req.body.user,
+        $BODY: req.body.comment
+    };
+    db.run(sql, data, (error) => {
+        if (error) {
+            console.error("Error posting comment: ", error.message);
+        } else {
+            res.send({success: true});
+        }
+    });
+});
+
+app.get("/comment", (req,res) => {
+    const data = {$IMAGEID: req.query.id};
+    const sql = "SELECT ID, BODY FROM COMMENT WHERE IMAGEID = $IMAGEID;";
+    db.all(sql, data, (error, rows) => {
+        if (error) {
+            console.log("Error retrieving comments: ", error.message);
+        } else {
+            res.send({rows});
+        }
+    });
+});
+
+app.post("/annotation", (req,res) => {
+    const sql = "INSERT INTO ANNOTATION(IMAGEID,USERID,BODY) VALUES($IMAGEID,$USERID,$BODY);"
+    const data = {
+        $IMAGEID: req.body.image,
+        $USERID: req.body.user,
+        $BODY: req.body.annotation
+    };
+    db.run(sql, data, (error) => {
+        if (error) {
+            console.error("Error creating annotation: ", error.message);
+        } else {
+            res.send({success: true});
+        }
+    });
+});
+
+app.get("/annotation", (req,res) => {
+    const data = {$IMAGEID: req.query.id};
+    const sql = "SELECT ID, BODY FROM ANNOTATION WHERE IMAGEID = $IMAGEID;";
+    db.all(sql, data, (error, rows) => {
+        if (error) {
+            console.log("Error retrieving annotations: ", error.message);
+        } else {
+            res.send({rows});
+        }
+    });
+});
