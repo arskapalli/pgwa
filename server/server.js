@@ -45,7 +45,7 @@ app.post("/upload", (req, res) =>{
     const sql = "INSERT INTO IMAGE(FILENAME, LABEL, DESCRIPTION, PATH) VALUES($FILENAME, $LABEL, $DESCRIPTION, $PATH);";
     const image = req.files.image;
     const filetype = image.name.split('.').pop();
-    
+
     db.get("SELECT MAX(ID) AS 'RESULT' FROM IMAGE", [], (error, row) => {
         if (error)
             console.error("Error: ", error.message);
@@ -71,4 +71,10 @@ app.post("/upload", (req, res) =>{
         }
     });
 
+});
+
+
+app.post("/login", (req, res)=>{
+    console.log("User: '" + req.body.username + "'\nPassword: '" + req.body.password + "'\n");
+    res.end();
 });
