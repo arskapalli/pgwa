@@ -77,7 +77,7 @@ app.post("/upload", (req, res) =>{
             const id = row.RESULT ? row.RESULT + 1 : 1;
             const data = {
                 $FILENAME: image.name,
-                $LABEL: image.name,
+                $LABEL: req.body.label,
                 $DESCRIPTION: req.body.description,
                 $PATH: "/images/" + id + "." + filetype
             };
@@ -89,7 +89,7 @@ app.post("/upload", (req, res) =>{
                 {
                     console.log("Upload success sike");
                     image.mv("../public/images/" + id + "." + filetype);
-                    res.send({success:true});
+                    res.send({success:true, image:id});
                 }
             });
         }

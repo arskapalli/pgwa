@@ -3,7 +3,7 @@
   "version": "0.1.0",
   "private": true,
   "dependencies": {
-    "classname": "0.0.0",
+    "classnames": "^2.2.6",
     "express": "^4.16.4",
     "express-fileupload": "^1.1.1-alpha.1",
     "react": "^16.7.0",

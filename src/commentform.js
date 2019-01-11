@@ -21,15 +21,15 @@ export default class CommentForm extends React.Component {
 
     render(){
         return(
-            <form onSubmit={this.submitHandler}>
+            <form className="list-group-item" onSubmit={this.submitHandler}>
                 <div className="input-group">
                     <input type="textarea" name="comment" placeholder="Comment" className="form-control"/>
-                    <span class="input-group-btn">
+                    <span class="input-group-append">
                         <button type="submit" className="btn btn-primary">Submit</button>
                     </span>
                 </div>
             </form>
         );
     }
-    
+
 }

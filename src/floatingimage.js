@@ -37,14 +37,20 @@ export default class FloatingImage extends React.Component {
             return "Loading..."; // TODO
 
         return (
-            <div className="FloatingImageContainer">
+            <div className="FloatingImageContainer card">
+                <div className="card-header">
+                    {this.state.label}
+                </div>
+
                 <img alt={this.state.label} className="FloatingImage" src={this.state.path} />
-                <div className="panel panel-default"> {/* WHY U NO WORKING */}
-                    <div className="panel-heading">{this.state.label}</div>
-                    <div className="panel-body">{this.state.desc}</div>
+
+                <div className="list-group">
+                    <div className="list-group-item">{this.state.desc}</div>
+
+                    <CommentForm id={this.props.match.params.id} />
+
                     <CommentList id={this.props.match.params.id} />
                 </div>
-                <CommentForm id={this.props.match.params.id} />
             </div>
         );
     }
