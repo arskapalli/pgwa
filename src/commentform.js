@@ -7,16 +7,34 @@ export default class CommentForm extends React.Component {
         this.submitHandler = this.submitHandler.bind(this);
     }
 
-    submitHandler(e){
+    async submitHandler(e){
         e.preventDefault();
-        const comment = new FormData(e.target);
+
+        const form = e.target;
+
+        form.setAttribute("disabled", "");
+
+        const comment = new FormData(form);
         comment.append("image", this.props.id);
         comment.append("user", 1);
 
-        fetch("/comment",{
-            method: "POST",
-            body: comment,
-        });
+        try{
+            const response = await fetch("/comment",{
+                method: "POST",
+                body: comment,
+            });
+
+            if( !response.ok )
+                throw "Not ok";
+
+            this.props.updateComments();
+            form.elements.comment.value = "";
+        }
+        catch{
+            console.log("Catching");
+        }
+
+        form.removeAttribute("disabled");
     }
 
     render(){
@@ -24,7 +42,7 @@ export default class CommentForm extends React.Component {
             <form className="list-group-item" onSubmit={this.submitHandler}>
                 <div className="input-group">
                     <input type="textarea" name="comment" placeholder="Comment" className="form-control"/>
-                    <span class="input-group-append">
+                    <span className="input-group-append">
                         <button type="submit" className="btn btn-primary">Submit</button>
                     </span>
                 </div>

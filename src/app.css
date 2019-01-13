@@ -10,6 +10,8 @@
 }
 
 .Header{
+    margin-bottom: 1em;
+
     color: white;
     display: flex;
 }
@@ -21,6 +23,7 @@
 }
 
 .Footer{
+    margin-top: 1em;
     color: white;
 }
 

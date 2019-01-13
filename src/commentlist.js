@@ -1,5 +1,7 @@
 import React from "react"
 
+import CommentForm from './commentform';
+
 export default class CommentList extends React.Component {
 
     constructor(props) {
@@ -7,9 +9,15 @@ export default class CommentList extends React.Component {
         this.state = {
             commentList: null
         };
+
+        this.updateComments = this.updateComments.bind(this);
     }
 
-    async componentDidMount(){
+    componentDidMount(){
+        this.updateComments();
+    }
+
+    async updateComments(){
         const imageId = this.props.id;
 
         try{
@@ -33,18 +41,22 @@ export default class CommentList extends React.Component {
             return "Loading";
         }
         return (
-            <ul className="list-group">
-                {this.state.commentList.map(comment => (
-                    <li key={comment.ID} className="list-group-item">
-                        <h6>
-                            {comment.BODY}
-                        </h6> 
-                        <p className="text-muted">
-                            {comment.USERNAME} - {comment.TIMESTAMP}
-                        </p>
-                    </li>
-                ))}
-            </ul>
+            <>
+                <CommentForm id={this.props.id} updateComments={this.updateComments}/>
+
+                <ul className="list-group">
+                    {this.state.commentList.map(comment => (
+                        <li key={comment.ID} className="list-group-item">
+                            <h6>
+                                {comment.BODY}
+                            </h6>
+                            <p className="text-muted">
+                                {comment.USERNAME} - {comment.TIMESTAMP}
+                            </p>
+                        </li>
+                    ))}
+                </ul>
+            </>
         );
     };
 }

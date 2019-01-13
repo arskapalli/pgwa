@@ -26,7 +26,7 @@ export default class ImageGrid extends React.Component{
 
     render(){
         if (!this.state.imageList) {
-            return "Loading"; // TODO
+            return <i class="m-auto fa fa-refresh fa-spin text-white fa-5x"></i>
         }
 
         const image_element_list = this.state.imageList.rows.map( (image) => {

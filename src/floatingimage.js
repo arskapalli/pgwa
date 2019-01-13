@@ -1,6 +1,5 @@
 import React from 'react';
 import CommentList from './commentlist';
-import CommentForm from './commentform';
 
 export default class FloatingImage extends React.Component {
     constructor(props) {
@@ -33,9 +32,6 @@ export default class FloatingImage extends React.Component {
     }
 
     render() {
-        if(!this.state.id)
-            return "Loading..."; // TODO
-
         return (
             <div className="FloatingImageContainer card">
                 <div className="card-header">
@@ -46,8 +42,6 @@ export default class FloatingImage extends React.Component {
 
                 <div className="list-group">
                     <div className="list-group-item">{this.state.desc}</div>
-
-                    <CommentForm id={this.props.match.params.id} />
 
                     <CommentList id={this.props.match.params.id} />
                 </div>
