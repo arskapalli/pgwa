@@ -11,7 +11,7 @@ app.use(cookieParser());
 function initializeDatabase() {
 
     const sql = [
-        "CREATE TABLE IF NOT EXISTS USER ( ID INTEGER PRIMARY KEY AUTOINCREMENT, USERNAME VARCHAR(20) NOT NULL, PASSWORD VARCHAR(64));",
+        "CREATE TABLE IF NOT EXISTS USER ( ID INTEGER PRIMARY KEY AUTOINCREMENT, USERNAME VARCHAR(20) NOT NULL UNIQUE, PASSWORD VARCHAR(64));",
         "CREATE TABLE IF NOT EXISTS IMAGE ( ID INTEGER PRIMARY KEY AUTOINCREMENT, FILENAME TEXT NOT NULL, LABEL TEXT NOT NULL, DESCRIPTION TEXT, IMAGE BLOB, ANNOTATION TEXT, USERID INT, PATH TEXT, FOREIGN KEY(USERID) REFERENCES USER(ID) );",
         "CREATE TABLE IF NOT EXISTS COMMENT ( ID INTEGER PRIMARY KEY AUTOINCREMENT, BODY TEXT NOT NULL, TIMESTAMP DATETIME DEFAULT CURRENT_TIMESTAMP, USERID INTEGER, IMAGEID INTEGER, FOREIGN KEY(USERID) REFERENCES USER(ID), FOREIGN KEY(IMAGEID) REFERENCES IMAGE(ID) );",
         "CREATE TABLE IF NOT EXISTS ANNOTATION ( ID INTEGER PRIMARY KEY AUTOINCREMENT, BODY TEXT NOT NULL, USERID INTEGER, IMAGEID INTEGER, FOREIGN KEY(USERID) REFERENCES USER(ID), FOREIGN KEY(IMAGEID) REFERENCES IMAGE(ID) );"
@@ -128,13 +128,15 @@ app.post("/register", (req, res)=>{
     const sql = "INSERT INTO USER(USERNAME, PASSWORD) VALUES($username, $password);";
     const data = {$username: req.body.username, $password: req.body.password};
 
-    db.run(sql, data, (error) => {
+    db.run(sql, data, function(error) {
         if( !error )
         {
+            res.cookie("userid", this.lastID);
             res.send({success:true});
         }
         else
         {
+            console.log("Error:", error);
             res.send({success:false});
         }
     });
