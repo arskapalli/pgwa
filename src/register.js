@@ -1,22 +1,49 @@
 import React from "react";
+import { Redirect } from "react-router-dom";
 
 export default class RegisterForm extends React.Component{
     constructor(props){
         super(props);
 
+        this.state = {redirect: false};
+
         this.submitHandler = this.submitHandler.bind(this);
     }
 
-    submitHandler(e){
+    async submitHandler(e){
         e.preventDefault();
+        const form = e.target;
 
-        fetch("/register",{
-            method: "POST",
-            body: new FormData(e.target),
-        });
+        form.setAttribute("disable", "");
+
+        try
+        {
+            const result = await fetch("/register",{
+                method: "POST",
+                body: new FormData(form),
+            });
+
+            if( !result.ok )
+                throw "not ok"; // TODO
+
+            const body = await result.json();
+
+            if( !body.success )
+                throw "not registered in"; // TODO
+
+            this.setState({redirect: true});
+        }
+        catch
+        {
+        }
+
+        form.removeAttribute("disable");
     }
 
     render(){
+        if(this.state.redirect)
+            return <Redirect to="/" />
+
         return(
             <div className="card m-auto">
                 <div className="card-header">Register:</div>
