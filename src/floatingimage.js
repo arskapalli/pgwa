@@ -9,6 +9,7 @@ export default class FloatingImage extends React.Component {
             path: null,
             label: null,
             desc: null,
+            loaded: false
         };
     };
 
