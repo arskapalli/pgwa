@@ -7,6 +7,7 @@ import ImageGrid        from "./imagegrid"
 import FloatingImage    from "./floatingimage"
 import Upload           from "./upload"
 import LoginForm        from "./loginform"
+import RegisterForm     from "./register"
 import NoMatch          from "./nomatch"
 import Footer           from "./footer"
 
@@ -31,6 +32,8 @@ export default class App extends React.Component{
                             <Route exact path="/upload" component={Upload}/>
 
                             <Route exact path="/login" component={LoginForm}/>
+
+                            <Route exact path="/register" component={RegisterForm}/>
 
                             <Route component={NoMatch}/> {/* 404 Handler */}
                         </Switch>

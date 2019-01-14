@@ -1,6 +1,6 @@
 import React from "react";
 
-export default class LoginForm extends React.Component{
+export default class RegisterForm extends React.Component{
     constructor(props){
         super(props);
 
@@ -10,7 +10,7 @@ export default class LoginForm extends React.Component{
     submitHandler(e){
         e.preventDefault();
 
-        fetch("/login",{
+        fetch("/register",{
             method: "POST",
             body: new FormData(e.target),
         });
@@ -19,7 +19,7 @@ export default class LoginForm extends React.Component{
     render(){
         return(
             <div className="card m-auto">
-                <div className="card-header">Login:</div>
+                <div className="card-header">Register:</div>
                 <form className="card-body" onSubmit={this.submitHandler}>
                     <div className="form-group">
                         <label for="username">Username:</label>
@@ -29,8 +29,11 @@ export default class LoginForm extends React.Component{
                         <label for="password">Password:</label>
                         <input className="form-control" type="password" id="password" name="password"/>
                     </div>
-                    <input className="btn btn-primary" type="submit" value="Login"/>
-                    <a className="btn float-right" href="/register">register</a>
+                    <div className="form-group">
+                        <label for="password2">Repeat password:</label>
+                        <input className="form-control" type="password" id="password2"/>
+                    </div>
+                    <input className="btn btn-primary" type="submit" value="Register"/>
                 </form>
             </div>
         );

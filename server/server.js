@@ -4,11 +4,14 @@ const sqlite3 = require('sqlite3').verbose();
 const port = process.env.port || 5000;
 
 const fileUpload = require('express-fileupload');
+const cookieParser = require('cookie-parser');
+
+app.use(cookieParser());
 
 function initializeDatabase() {
 
     const sql = [
-        "CREATE TABLE IF NOT EXISTS USER ( ID INTEGER PRIMARY KEY AUTOINCREMENT, USERNAME VARCHAR(20) NOT NULL );",
+        "CREATE TABLE IF NOT EXISTS USER ( ID INTEGER PRIMARY KEY AUTOINCREMENT, USERNAME VARCHAR(20) NOT NULL, PASSWORD VARCHAR(64));",
         "CREATE TABLE IF NOT EXISTS IMAGE ( ID INTEGER PRIMARY KEY AUTOINCREMENT, FILENAME TEXT NOT NULL, LABEL TEXT NOT NULL, DESCRIPTION TEXT, IMAGE BLOB, ANNOTATION TEXT, USERID INT, PATH TEXT, FOREIGN KEY(USERID) REFERENCES USER(ID) );",
         "CREATE TABLE IF NOT EXISTS COMMENT ( ID INTEGER PRIMARY KEY AUTOINCREMENT, BODY TEXT NOT NULL, TIMESTAMP DATETIME DEFAULT CURRENT_TIMESTAMP, USERID INTEGER, IMAGEID INTEGER, FOREIGN KEY(USERID) REFERENCES USER(ID), FOREIGN KEY(IMAGEID) REFERENCES IMAGE(ID) );",
         "CREATE TABLE IF NOT EXISTS ANNOTATION ( ID INTEGER PRIMARY KEY AUTOINCREMENT, BODY TEXT NOT NULL, USERID INTEGER, IMAGEID INTEGER, FOREIGN KEY(USERID) REFERENCES USER(ID), FOREIGN KEY(IMAGEID) REFERENCES IMAGE(ID) );"
@@ -99,8 +102,42 @@ app.post("/upload", (req, res) =>{
 
 
 app.post("/login", (req, res)=>{
-    console.log("User: '" + req.body.username + "'\nPassword: '" + req.body.password + "'\n");
-    res.end();
+    if(req.cookies && req.cookies.userid)
+    {
+        res.send({success:false});
+        return;
+    }
+
+    const sql = "SELECT ID FROM USER WHERE USERNAME=$username AND PASSWORD=$password";
+    const data = {$username: req.body.username, $password: req.body.password};
+
+    db.all(sql, data, (error, rows) => {
+        if( !error )
+            if(rows.length)
+            {
+                res.cookie("userid", rows[0].ID);
+                res.send({success:true});
+                return;
+            }
+
+        res.send({success:false});
+    });
+});
+
+app.post("/register", (req, res)=>{
+    const sql = "INSERT INTO USER(USERNAME, PASSWORD) VALUES($username, $password);";
+    const data = {$username: req.body.username, $password: req.body.password};
+
+    db.run(sql, data, (error) => {
+        if( !error )
+        {
+            res.send({success:true});
+        }
+        else
+        {
+            res.send({success:false});
+        }
+    });
 });
 
 
