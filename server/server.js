@@ -5,8 +5,10 @@ const port = process.env.port || 5000;
 
 const fileUpload = require('express-fileupload');
 const cookieParser = require('cookie-parser');
+const bodyParser = require('body-parser');
 
 app.use(cookieParser());
+app.use(bodyParser.json());
 
 function initializeDatabase() {
 
@@ -14,7 +16,7 @@ function initializeDatabase() {
         "CREATE TABLE IF NOT EXISTS USER ( ID INTEGER PRIMARY KEY AUTOINCREMENT, USERNAME VARCHAR(20) NOT NULL UNIQUE, PASSWORD VARCHAR(64));",
         "CREATE TABLE IF NOT EXISTS IMAGE ( ID INTEGER PRIMARY KEY AUTOINCREMENT, FILENAME TEXT NOT NULL, LABEL TEXT NOT NULL, DESCRIPTION TEXT, IMAGE BLOB, ANNOTATION TEXT, USERID INT, PATH TEXT, FOREIGN KEY(USERID) REFERENCES USER(ID) );",
         "CREATE TABLE IF NOT EXISTS COMMENT ( ID INTEGER PRIMARY KEY AUTOINCREMENT, BODY TEXT NOT NULL, TIMESTAMP DATETIME DEFAULT CURRENT_TIMESTAMP, USERID INTEGER, IMAGEID INTEGER, FOREIGN KEY(USERID) REFERENCES USER(ID), FOREIGN KEY(IMAGEID) REFERENCES IMAGE(ID) );",
-        "CREATE TABLE IF NOT EXISTS ANNOTATION ( ID INTEGER PRIMARY KEY AUTOINCREMENT, BODY TEXT NOT NULL, USERID INTEGER, IMAGEID INTEGER, FOREIGN KEY(USERID) REFERENCES USER(ID), FOREIGN KEY(IMAGEID) REFERENCES IMAGE(ID) );"
+        "CREATE TABLE IF NOT EXISTS ANNOTATION ( ID INTEGER PRIMARY KEY AUTOINCREMENT, BODY TEXT NOT NULL, USERID INTEGER, IMAGEID INTEGER, X REAL, Y REAL, TYPE VARCHAR(20), WIDTH REAL, HEIGHT REAL, SRC VARCHAR(64), FOREIGN KEY(USERID) REFERENCES USER(ID), FOREIGN KEY(IMAGEID) REFERENCES IMAGE(ID) );"
     ];
 
     let db = new sqlite3.Database('./pgwa.db', (err) => {
@@ -172,12 +174,18 @@ app.get("/comment", (req,res) => {
 });
 
 app.post("/annotation", (req,res) => {
-    const sql = "INSERT INTO ANNOTATION(IMAGEID,USERID,BODY) VALUES($IMAGEID,$USERID,$BODY);"
     const data = {
-        $IMAGEID: req.body.image,
-        $USERID: req.body.user,
-        $BODY: req.body.annotation
-    };
+        $IMAGEID: req.body[2].split('/').pop(),
+        $X: JSON.parse(req.body[1])[0].geometry.x,
+        $Y: JSON.parse(req.body[1])[0].geometry.y,
+        $WIDTH: JSON.parse(req.body[1])[0].geometry.width,
+        $HEIGHT: JSON.parse(req.body[1])[0].geometry.height,
+        $TYPE: JSON.parse(req.body[1])[0].type,
+        $SRC: req.body[3],
+        $TEXT: req.body[0]
+    }
+    console.log(data);
+    const sql = "INSERT INTO ANNOTATION(IMAGEID,X,Y,TYPE,BODY,WIDTH,HEIGHT,SRC) VALUES($IMAGEID,$X,$Y,$TYPE,$TEXT,$WIDTH,$HEIGHT,$SRC);"
     db.run(sql, data, (error) => {
         if (error) {
             console.error("Error creating annotation: ", error.message);
@@ -189,12 +197,12 @@ app.post("/annotation", (req,res) => {
 
 app.get("/annotation", (req,res) => {
     const data = {$IMAGEID: req.query.id};
-    const sql = "SELECT ID, BODY FROM ANNOTATION WHERE IMAGEID = $IMAGEID;";
-    db.all(sql, data, (error, rows) => {
+    const sql = "SELECT ID, BODY, X, Y, WIDTH, HEIGHT, TYPE, SRC FROM ANNOTATION WHERE IMAGEID = $IMAGEID;";
+    db.all(sql, data, (error, annotations) => {
         if (error) {
             console.log("Error retrieving annotations: ", error.message);
         } else {
-            res.send({rows});
+            res.send({annotations});
         }
     });
 });

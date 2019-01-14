@@ -9,11 +9,24 @@ export default class FloatingImage extends React.Component {
             path: null,
             label: null,
             desc: null,
-            loaded: false
+            annotations: null,
+            annotationsLoaded: false
         };
+        this.loadAnnotations = this.loadAnnotations.bind(this);
     };
 
     async componentDidMount(){
+
+        window.anno.addHandler("onAnnotationCreated", (annotation) => {
+            console.log(annotation);
+            const data = JSON.stringify([annotation.text, JSON.stringify(annotation.shapes), annotation.context, annotation.src])
+            fetch("/annotation", {
+                method: "POST",
+                body: data,
+                headers: { "Content-Type": "application/json" }
+            });
+        });
+
         const imageId = this.props.match.params.id;
 
         try{
@@ -30,16 +43,62 @@ export default class FloatingImage extends React.Component {
         catch{
             // TODO
         }
+
+        try{
+            const response = await fetch("/annotation?id=" + imageId);
+
+            if(response.status !== 200)
+                throw Error(response.message);
+
+            const body = await response.json();
+
+            this.setState({annotations: body})
+
+        }
+        catch{
+            // TODO
+        }
+
+
+    }
+
+    imageLoadHandler() {
+        window.anno.makeAnnotatable(document.getElementById("FloatingImage"));
+    }
+
+    loadAnnotations() {
+        console.log(this.state.annotations.annotations.length)
+        for (let i = 0, len = this.state.annotations.annotations.length; i < len; i++) {
+            let annotation = this.state.annotations.annotations[i]
+            let properties = {
+                src: annotation.SRC,
+                text: annotation.BODY,
+                shapes: [{
+                    type: annotation.TYPE,
+                    geometry: { x: annotation.X, y: annotation.Y, width: annotation.WIDTH, height: annotation.HEIGHT }
+                }],
+                editable: false
+            }
+            console.log(properties);
+            window.anno.addAnnotation(properties);
+        }
+        this.setState({annotations: null, annotationsLoaded: true});
     }
 
     render() {
+
+        if (this.state.annotations) {
+            console.log(this.state.annotations)
+            this.loadAnnotations();
+        }
+
         return (
             <div className="FloatingImageContainer card">
                 <div className="card-header">
                     {this.state.label}
                 </div>
 
-                <img alt={this.state.label} className="FloatingImage" src={this.state.path} />
+                <img onLoad={this.imageLoadHandler.bind(this)} alt={this.state.label} id="FloatingImage" src={this.state.path} />
 
                 <div className="list-group">
                     <div className="list-group-item">{this.state.desc}</div>
