@@ -4,15 +4,20 @@ import CommentList from './commentlist';
 export default class FloatingImage extends React.Component {
     constructor(props) {
         super(props);
+
+        this._imageRef = React.createRef();
+        this._annotations = null;
+
         this.state = {
             id: null,
             path: null,
             label: null,
             desc: null,
-            annotations: null,
-            annotationsLoaded: false
+            annotationsEnabled: false,
+            annotationsLoaded: false,
         };
         this.loadAnnotations = this.loadAnnotations.bind(this);
+        this.imageLoadHandler = this.imageLoadHandler.bind(this)
     };
 
     async componentDidMount(){
@@ -38,7 +43,6 @@ export default class FloatingImage extends React.Component {
             const body = await response.json();
 
             this.setState(body);
-
         }
         catch{
             // TODO
@@ -52,24 +56,26 @@ export default class FloatingImage extends React.Component {
 
             const body = await response.json();
 
-            this.setState({annotations: body})
-
+            this._annotations = body;
+            this.setState({annotationsLoaded: true})
         }
         catch{
             // TODO
         }
-
-
     }
 
     imageLoadHandler() {
-        window.anno.makeAnnotatable(document.getElementById("FloatingImage"));
+
+        this.setState({annotationsEnabled: true});
     }
 
     loadAnnotations() {
-        console.log(this.state.annotations.annotations.length)
-        for (let i = 0, len = this.state.annotations.annotations.length; i < len; i++) {
-            let annotation = this.state.annotations.annotations[i]
+        window.anno.makeAnnotatable(this._imageRef.current);
+
+        //~ console.log("addAnnotations: ", this._annotations);
+
+        for (let i = 0, len = this._annotations.annotations.length; i < len; i++) {
+            let annotation = this._annotations.annotations[i]
             let properties = {
                 src: annotation.SRC,
                 text: annotation.BODY,
@@ -79,16 +85,14 @@ export default class FloatingImage extends React.Component {
                 }],
                 editable: false
             }
-            console.log(properties);
+            //~ console.log(properties);
             window.anno.addAnnotation(properties);
         }
-        this.setState({annotations: null, annotationsLoaded: true});
     }
 
     render() {
 
-        if (this.state.annotations) {
-            console.log(this.state.annotations)
+        if (this.state.annotationsEnabled && this.state.annotationsLoaded) {
             this.loadAnnotations();
         }
 
@@ -98,7 +102,7 @@ export default class FloatingImage extends React.Component {
                     {this.state.label}
                 </div>
 
-                <img onLoad={this.imageLoadHandler.bind(this)} alt={this.state.label} id="FloatingImage" src={this.state.path} />
+                <img ref={this._imageRef} onLoad={this.imageLoadHandler} alt={this.state.label} id="FloatingImage" src={this.state.path} />
 
                 <div className="list-group">
                     <div className="list-group-item">{this.state.desc}</div>
